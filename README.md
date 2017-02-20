@@ -1,6 +1,6 @@
 #**Finding Lane Lines on the Road**
 
-This is my first project for the Udacity Self-Driving Nanodegree. This project was challenging and fun to work, and forced me to a lot of catch up with certain skills that I haven't had the chance to use much before, like Numpy, Hough Transform, OpenCV, and Jupyter Notebook.
+This is my first project for the Udacity Self-Driving Nanodegree. This project was challenging and fun to work on, and forced me to a lot of catch-up with certain skills that I haven't had the chance to use much before like Numpy, Hough Transform, OpenCV, and Jupyter Notebook.
 
 ### Reflection
 
@@ -8,24 +8,24 @@ This is my first project for the Udacity Self-Driving Nanodegree. This project w
 
 My pipeline consisted of 5 steps:
 
-First, I applied different threshold for different colors channels. With the exception of blue, I was able to apply very aggressive thresholds to the colors. Blue seemed to be abundant through the entire image, and not just in specific areas.
+First, I applied different thresholds for different colors channels. With the exception of blue, I was able to apply very aggressive thresholds to the colors. Blue seemed to be abundant through the entire image, and not just in specific areas.
 
 <!-- ![alt text][image1] -->
 ![color threshold][output_images/color_threshold.png]
 
-Next was making the image in grayscale, where the lines, regardless of color, would standout well, as well as making it easier to work on a single color dimension as opposed to 3
+Next was making the image in grayscale where the lines, regardless of color, would standout well, as well as making it easier to work on a single color dimension as opposed to 3.
 
 ![color threshold][output_images/grayscale.png]
 
-Gaussian blur was applied to smooth the edges and bring up a bit some weak points and lines.
+Gaussian blur was applied to smooth the edges and bring up some weak points and lines.
 
 ![color threshold][output_images/gaussian_blur.png]
 
-Canny edge detection was applied to to find the contour of most lines. I found that my images after the color and grayscaling processing weren't very sensitive to the edge detection.
+Canny edge detection was applied to find the contour of most lines. I found that my images after the color and grayscaling processing weren't very sensitive to the edge detection.
 
 ![color threshold][output_images/canny_edge.png]
 
-Created a polygon mask to filter out all other areas of the image that are not relevant. I created dynamic values to support different image sizes, and also left some margins on bottom left and right to give a wiggle room for the when not perfectly centered in a lane.
+Created a polygon mask to filter out all other areas of the image that are not relevant. I created dynamic values to support different image sizes, and also left some margins on bottom left and right to give some wiggle room for the when not perfectly centered in a lane.
 
 ![color threshold][output_images/region_of_interest.png]
 
@@ -46,7 +46,7 @@ Hough lines were used to create a single line for each side of the lane.
 #### Challenge
 
 I was able to get decent results very quickly while working with the main 2 videos. However, my initial approach had poor performance on the challenge video. The issues were:
-- The patch of the road that is gray didn't provide enough contrast for the yellow lines to be detected
+- The patch of the road that is gray didn't provide enough contrast for the yellow lines to be detected.
 - Some cars on the opposite side of the road would sometimes be identified as spots or lines.
 - After the gray patch of the road, there were a few lines under the tree shade that didn't had bad contrast.
 
@@ -57,7 +57,7 @@ I had to make the following changes to generalize better for all videos:
 
 ###2. Identify potential shortcomings with your current pipeline
 
-A few shortcomings that I believe would be an issue with my approach is the fact I relied heavily on the colors thresholds. That might have worked well for the landscape of the images, which were kinda similar between all the videos, but would not translate well with different weather or even sunlight conditions.
+A few shortcomings that I believe would be an issue with my approach is the fact I relied heavily on the color thresholds. That might have worked well for the landscape of the images, which were kind of similar between all the videos, but would not translate well with different weather or even sunlight conditions.
 
 
 ###3. Suggest possible improvements to your pipeline
