@@ -39,7 +39,7 @@ Hough lines were used to create a single line for each side of the lane.
 * A list with all the points is created so a mean point can be identified. The mean point is used together with an imaginary point below the bottom of the image to calculate the slope of the line.
 * Using the calculated slope, I draw a line from the imaginary bottom point to the top most point extracted before the list were separated.
 
-![color threshold][output_images/final.png]
+![color threshold](output_images/final.png)
 
 
 #### Challenge
