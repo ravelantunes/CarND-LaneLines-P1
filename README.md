@@ -10,28 +10,27 @@ My pipeline consisted of 5 steps:
 
 First, I applied different thresholds for different colors channels. With the exception of blue, I was able to apply very aggressive thresholds to the colors. Blue seemed to be abundant through the entire image, and not just in specific areas.
 
-<!-- ![alt text][image1] -->
-![color threshold][output_images/color_threshold.png]
+![color threshold](output_images/color_threshold.png)
 
 Next was making the image in grayscale where the lines, regardless of color, would standout well, as well as making it easier to work on a single color dimension as opposed to 3.
 
-![color threshold][output_images/grayscale.png]
+![color threshold](output_images/grayscale.png)
 
 Gaussian blur was applied to smooth the edges and bring up some weak points and lines.
 
-![color threshold][output_images/gaussian_blur.png]
+![color threshold](output_images/gaussian_blur.png)
 
 Canny edge detection was applied to find the contour of most lines. I found that my images after the color and grayscaling processing weren't very sensitive to the edge detection.
 
-![color threshold][output_images/canny_edge.png]
+![color threshold](output_images/canny_edge.png)
 
 Created a polygon mask to filter out all other areas of the image that are not relevant. I created dynamic values to support different image sizes, and also left some margins on bottom left and right to give some wiggle room for the when not perfectly centered in a lane.
 
-![color threshold][output_images/region_of_interest.png]
+![color threshold](output_images/region_of_interest.png)
 
 I then identified lines through Hough Transform. I've kept the values low on threshold, minimum line size and maximum distance. Trying to keep those values high would filter out a lot of important information when working on yellow lanes, or shades on the road.
 
-![color threshold][output_images/hough_lines.png]
+![color threshold](output_images/hough_lines.png)
 
 Hough lines were used to create a single line for each side of the lane.
 * Before lines are separated, I first find what's the smallest Y point (highest on the image) so I can use later to draw the image
