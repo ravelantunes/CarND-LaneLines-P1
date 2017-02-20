@@ -1,102 +1,66 @@
-#**Finding Lane Lines on the Road** 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+#**Finding Lane Lines on the Road**
 
-<img src="laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
+This is my first project for the Udacity Self-Driving Nanodegree. This project was challenging and fun to work, and forced me to a lot of catch up with certain skills that I haven't had the chance to use much before, like Numpy, Hough Transform, OpenCV, and Jupyter Notebook.
 
-Overview
----
+### Reflection
 
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
+###1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
+My pipeline consisted of 5 steps:
 
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
+First, I applied different threshold for different colors channels. With the exception of blue, I was able to apply very aggressive thresholds to the colors. Blue seemed to be abundant through the entire image, and not just in specific areas.
 
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+<!-- ![alt text][image1] -->
+![color threshold][output_images/color_threshold.png]
+
+Next was making the image in grayscale, where the lines, regardless of color, would standout well, as well as making it easier to work on a single color dimension as opposed to 3
+
+![color threshold][output_images/grayscale.png]
+
+Gaussian blur was applied to smooth the edges and bring up a bit some weak points and lines.
+
+![color threshold][output_images/gaussian_blur.png]
+
+Canny edge detection was applied to to find the contour of most lines. I found that my images after the color and grayscaling processing weren't very sensitive to the edge detection.
+
+![color threshold][output_images/canny_edge.png]
+
+Created a polygon mask to filter out all other areas of the image that are not relevant. I created dynamic values to support different image sizes, and also left some margins on bottom left and right to give a wiggle room for the when not perfectly centered in a lane.
+
+![color threshold][output_images/region_of_interest.png]
+
+I then identified lines through Hough Transform. I've kept the values low on threshold, minimum line size and maximum distance. Trying to keep those values high would filter out a lot of important information when working on yellow lanes, or shades on the road.
+
+![color threshold][output_images/hough_lines.png]
+
+Hough lines were used to create a single line for each side of the lane.
+* Before lines are separated, I first find what's the smallest Y point (highest on the image) so I can use later to draw the image
+* All lines are then separated based on the slope. Lines that had a slope between -0.4 and 0.4 were ignored as any slope on that direction of that car was likely noise.
+* For each individual side, I calculated a weighted average of the slope, where the weight of the slope is the length of the line to the power of 5
+* A list with all the points is created so a mean point can be identified. The mean point is used together with an imaginary point below the bottom of the image to calculate the slope of the line.
+* Using the calculated slope, I draw a line from the imaginary bottom point to the top most point extracted before the list were separated.
+
+![color threshold][output_images/final.png]
 
 
-Creating a Great Writeup
----
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
-1. Describe the pipeline
-2. Identify any shortcomings
-3. Suggest possible improvements
+#### Challenge
 
-We encourage using images in your writeup to demonstrate how your pipeline works.  
+I was able to get decent results very quickly while working with the main 2 videos. However, my initial approach had poor performance on the challenge video. The issues were:
+- The patch of the road that is gray didn't provide enough contrast for the yellow lines to be detected
+- Some cars on the opposite side of the road would sometimes be identified as spots or lines.
+- After the gray patch of the road, there were a few lines under the tree shade that didn't had bad contrast.
 
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
+I had to make the following changes to generalize better for all videos:
+- Decrease thresholds for colors and for Canny edges to get more lines under bad contrast situations.
+- Modified how I calculate the region of interest so it used more dynamic values, as the challenge video had different dimension that the other videos.
+- Create a more robust slope average calculation of the hough lines to compensate for the additional noise of the low thresholds.
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+###2. Identify potential shortcomings with your current pipeline
+
+A few shortcomings that I believe would be an issue with my approach is the fact I relied heavily on the colors thresholds. That might have worked well for the landscape of the images, which were kinda similar between all the videos, but would not translate well with different weather or even sunlight conditions.
 
 
-The Project
----
+###3. Suggest possible improvements to your pipeline
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you can install the starter kit or follow the install instructions below to get started on this project. ##
-
-**Step 1:** Getting setup with Python
-
-To do this project, you will need Python 3 along with the numpy, matplotlib, and OpenCV libraries, as well as Jupyter Notebook installed. 
-
-We recommend downloading and installing the Anaconda Python 3 distribution from Continuum Analytics because it comes prepackaged with many of the Python dependencies you will need for this and future projects, makes it easy to install OpenCV, and includes Jupyter Notebook.  Beyond that, it is one of the most common Python distributions used in data analytics and machine learning, so a great choice if you're getting started in the field.
-
-Choose the appropriate Python 3 Anaconda install package for your operating system <A HREF="https://www.continuum.io/downloads" target="_blank">here</A>.   Download and install the package.
-
-If you already have Anaconda for Python 2 installed, you can create a separate environment for Python 3 and all the appropriate dependencies with the following command:
-
-`>  conda create --name=yourNewEnvironment python=3 anaconda`
-
-`>  source activate yourNewEnvironment`
-
-**Step 2:** Installing OpenCV
-
-Once you have Anaconda installed, first double check you are in your Python 3 environment:
-
-`>python`    
-`Python 3.5.2 |Anaconda 4.1.1 (x86_64)| (default, Jul  2 2016, 17:52:12)`  
-`[GCC 4.2.1 Compatible Apple LLVM 4.2 (clang-425.0.28)] on darwin`  
-`Type "help", "copyright", "credits" or "license" for more information.`  
-`>>>`   
-(Ctrl-d to exit Python)
-
-run the following commands at the terminal prompt to get OpenCV:
-
-`> pip install pillow`  
-`> conda install -c menpo opencv3=3.1.0`
-
-then to test if OpenCV is installed correctly:
-
-`> python`  
-`>>> import cv2`  
-`>>>`  (i.e. did not get an ImportError)
-
-(Ctrl-d to exit Python)
-
-**Step 3:** Installing moviepy  
-
-We recommend the "moviepy" package for processing video in this project (though you're welcome to use other packages if you prefer).  
-
-To install moviepy run:
-
-`>pip install moviepy`  
-
-and check that the install worked:
-
-`>python`  
-`>>>import moviepy`  
-`>>>`  (i.e. did not get an ImportError)
-
-(Ctrl-d to exit Python)
-
-**Step 4:** Opening the code in a Jupyter Notebook
-
-You will complete this project in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out <A HREF="https://www.packtpub.com/books/content/basics-jupyter-notebook-and-python" target="_blank">Cyrille Rossant's Basics of Jupyter Notebook and Python</A> to get started.
-
-Jupyter is an ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, run the following command at the terminal prompt (be sure you're in your Python 3 environment!):
-
-`> jupyter notebook`
-
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
-
-**Step 5:** Complete the project and submit both the Ipython notebook and the project writeup
-
+- Right now, each frame is ignorant of the state of the previous frames. An algorithm like Kalman filter or even something more simple as a moving average would help smoothing out the line changes frame-by-frame and the impact of noise.
+- Lines towards the bottom of the image are much easier to recognize, and could make sure of stricter threshold for things like colors, Canny edges, and Hough lines, while lines towards the middle required smaller threshold to identify lanes, and as consequence ends up capturing a lot of noise. That could be overcome by applying different set of thresholds to different parts of the image, or through a gradient.
